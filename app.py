@@ -104,12 +104,23 @@ def calculate_breadth(close_prices):
 
 st.divider()
 
-with st.spinner("⏳ Fetching S&P 500 constituents from State Street..."):
-    tickers, name_map = get_sp500_tickers()
-    sector_map = get_sector_map(tickers)
+progress_bar = st.progress(0)
+status = st.empty()
 
-with st.spinner(f"⏳ Downloading price data for {len(tickers)} stocks... this may take 20-30 seconds"):
-    close_prices = get_price_data(tickers)
+status.info("⏳ Step 1 of 3 — Fetching S&P 500 constituents from State Street...")
+tickers, name_map = get_sp500_tickers()
+progress_bar.progress(33)
+
+status.info("⏳ Step 2 of 3 — Downloading live price data for 500+ stocks from Yahoo Finance...")
+close_prices = get_price_data(tickers)
+progress_bar.progress(66)
+
+status.info("⏳ Step 3 of 3 — Fetching sector classifications for all constituents...")
+sector_map = get_sector_map(tickers)
+progress_bar.progress(100)
+
+status.empty()
+progress_bar.empty()
 
 todays_change, breadth_table = calculate_breadth(close_prices)
 total_stocks = todays_change.count()
