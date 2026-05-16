@@ -13,7 +13,9 @@ st.set_page_config(
 
 st.title("📊 S&P 500 Market Breadth Analyzer")
 from datetime import datetime
-last_updated = datetime.now().strftime("%B %d, %Y at %I:%M %p")
+import pytz
+eastern = pytz.timezone('US/Eastern')
+last_updated = datetime.now(eastern).strftime("%B %d, %Y at %I:%M %p ET")
 st.caption(f"Real-time breadth analysis across all S&P 500 constituents.")
 
 @st.cache_data(ttl=300)
