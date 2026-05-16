@@ -139,6 +139,8 @@ progress_bar.progress(100)
 status.empty()
 progress_bar.empty()
 
+st.info("🔄 Data auto-refreshes every 5 minutes. Last updated: " + last_updated)
+
 todays_change, breadth_table = calculate_breadth(close_prices)
 total_stocks = todays_change.count()
 
@@ -294,3 +296,6 @@ fig_sector.update_layout(
 )
 
 st.plotly_chart(fig_sector, use_container_width=True, config={'displayModeBar': False})
+
+st.divider()
+st.caption("⚠️ This tool is for informational purposes only and does not constitute financial advice. Data sourced from Yahoo Finance and State Street Global Advisors. Past market conditions do not guarantee future results.")
