@@ -104,10 +104,27 @@ def calculate_breadth(close_prices):
 
 st.divider()
 
+with st.expander("📖 How to read this dashboard"):
+    st.markdown("""
+    **Market Breadth** measures how many stocks are actually participating in a market move — not just the index price.
+    
+    - **S&P 500 up but most stocks down?** → Narrow rally driven by mega-caps. Potentially fragile.
+    - **S&P 500 up and most stocks up?** → Broad rally. Healthy and more sustainable.
+    - **Avg Stock Change vs S&P 500 price** → If these diverge significantly, a few large stocks are driving the index.
+    
+    **Breadth Distribution** shows how today's moves are spread across all 500 stocks by return bucket.
+    
+    **Sector Breadth** shows which sectors are leading and which are lagging — useful for spotting rotation.
+    
+    **Top Movers** shows the biggest individual winners and losers within the index today.
+    
+    *Data refreshes every 5 minutes. Sector data refreshes every 24 hours.*
+    """)
+
 progress_bar = st.progress(0)
 status = st.empty()
 
-status.info("⏳ Step 1 of 3 — Fetching S&P 500 constituents from State Street...")
+status.info("⏳ Step 1 of 3 — Fetching S&P 500 constituents...")
 tickers, name_map = get_sp500_tickers()
 progress_bar.progress(33)
 
