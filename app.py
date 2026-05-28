@@ -33,21 +33,9 @@ def get_sp500_tickers():
 
 @st.cache_data(ttl=604800)
 def get_sector_map(tickers):
-    import concurrent.futures
-    import time
-
-    manual_overrides = {
-        'FISV': 'Financial Services'
-    }
-
-    def fetch_sector(ticker):
-        if ticker in manual_overrides:
-            return ticker, manual_overrides[ticker]
-        try:
-            sector = yf.Ticker(ticker).info.get('sector', 'Unknown')
-            return ticker, sector if sector else 'Unknown'
-        except:
-            return ticker, 'Unknown'
+    sector_df = pd.read_csv('sectors.csv')
+    sector_map = dict(zip(sector_df['Ticker'], sector_df['Sector']))
+    return sector_map
 
     results = []
     batch_size = 50
