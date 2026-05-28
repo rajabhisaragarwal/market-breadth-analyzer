@@ -35,6 +35,8 @@ def get_sp500_tickers():
 def get_sector_map(tickers):
     sector_df = pd.read_csv('sectors.csv')
     sector_map = dict(zip(sector_df['Ticker'], sector_df['Sector']))
+    st.write(f"Debug — sector_df rows after filtering: {len(sector_df)}")
+    st.write(sector_df['Sector'].value_counts())
     return sector_map
 
     results = []
