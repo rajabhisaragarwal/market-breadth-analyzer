@@ -3,7 +3,6 @@ import streamlit as st
 import yfinance as yf
 import pandas as pd
 import plotly.graph_objects as go
-import time
 
 st.cache_data.clear()
 
@@ -35,22 +34,6 @@ def get_sp500_tickers():
 def get_sector_map(tickers):
     sector_df = pd.read_csv('sectors.csv')
     sector_map = dict(zip(sector_df['Ticker'], sector_df['Sector']))
-    return sector_map
-
-    results = []
-    batch_size = 50
-    for i in range(0, len(tickers), batch_size):
-        batch = tickers[i:i+batch_size]
-        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-            batch_results = list(executor.map(fetch_sector, batch))
-        results.extend(batch_results)
-        time.sleep(2)
-
-    sector_map = dict(results)
-    unknown_count = sum(1 for v in sector_map.values() if v == 'Unknown')
-    if unknown_count > len(tickers) * 0.2:
-        st.warning(f"⚠️ Sector data incomplete — {unknown_count} tickers returned Unknown. Try refreshing.")
-
     return sector_map
 
 @st.cache_data(ttl=300)
@@ -146,7 +129,7 @@ status.info("⏳ Step 2 of 3 — Downloading live price data for 500+ stocks fro
 close_prices = get_price_data(tickers)
 progress_bar.progress(66)
 
-status.info("⏳ Step 3 of 3 — Fetching sector classifications for all constituents...")
+status.info("⏳ Step 3 of 3 — Loading sector classifications...")
 sector_map = get_sector_map(tickers)
 progress_bar.progress(100)
 
