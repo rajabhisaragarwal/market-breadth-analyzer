@@ -31,7 +31,7 @@ def get_sp500_tickers():
     name_map = dict(zip(spy_holdings['Ticker'], spy_holdings['Name']))
     return tickers, name_map
 
-@st.cache_data(ttl=86400)
+@st.cache_data(ttl=604800)
 def get_sector_map(tickers):
     import concurrent.futures
 
@@ -132,7 +132,7 @@ with st.expander("📖 How to read this dashboard"):
     
     **Top Movers** shows the biggest individual winners and losers within the index today.
     
-    *Data refreshes every 5 minutes. Sector data refreshes every 24 hours.*
+    *Data refreshes every 5 minutes. Sector data refreshes every week.*
     """)
 
 progress_bar = st.progress(0)
