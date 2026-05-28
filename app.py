@@ -34,23 +34,35 @@ def get_sp500_tickers():
 @st.cache_data(ttl=604800)
 def get_sector_map(tickers):
     import concurrent.futures
+    import time
+
+    manual_overrides = {
+        'FISV': 'Financial Services'
+    }
 
     def fetch_sector(ticker):
+        if ticker in manual_overrides:
+            return ticker, manual_overrides[ticker]
         try:
-            return ticker, yf.Ticker(ticker).info.get('sector', 'Unknown')
+            sector = yf.Ticker(ticker).info.get('sector', 'Unknown')
+            return ticker, sector if sector else 'Unknown'
         except:
             return ticker, 'Unknown'
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
-        results = list(executor.map(fetch_sector, tickers))
+    results = []
+    batch_size = 50
+    for i in range(0, len(tickers), batch_size):
+        batch = tickers[i:i+batch_size]
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            batch_results = list(executor.map(fetch_sector, batch))
+        results.extend(batch_results)
+        time.sleep(2)
 
     sector_map = dict(results)
-    
-    # Validate — if more than 20% are Unknown, something went wrong
     unknown_count = sum(1 for v in sector_map.values() if v == 'Unknown')
     if unknown_count > len(tickers) * 0.2:
         st.warning(f"⚠️ Sector data incomplete — {unknown_count} tickers returned Unknown. Try refreshing.")
-    
+
     return sector_map
 
 @st.cache_data(ttl=300)
