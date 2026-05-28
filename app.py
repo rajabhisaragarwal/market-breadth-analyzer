@@ -60,12 +60,15 @@ def get_price_data(tickers):
 
 @st.cache_data(ttl=300)
 def get_sp500_price():
-    sp500 = yf.Ticker("^GSPC")
-    data = sp500.history(period='2d')
-    current_price = data['Close'].iloc[-1]
-    prev_close = data['Close'].iloc[-2]
-    pct_change = ((current_price - prev_close) / prev_close) * 100
-    return round(current_price, 2), round(pct_change, 2)
+    try:
+        sp500 = yf.Ticker("^GSPC")
+        data = sp500.history(period='2d')
+        current_price = data['Close'].iloc[-1]
+        prev_close = data['Close'].iloc[-2]
+        pct_change = ((current_price - prev_close) / prev_close) * 100
+        return round(current_price, 2), round(pct_change, 2)
+    except:
+        return None, None
 
 def categorize_breadth(pct):
     if pct >= 20:
@@ -166,7 +169,10 @@ sp500_price, sp500_change = get_sp500_price()
 st.markdown(f"**As of {last_updated}**")
 
 col0, col1, col2, col3, col4 = st.columns(5)
-col0.metric("S&P 500", f"{sp500_price:,.2f}", f"{sp500_change}%", delta_color="normal")
+if sp500_price is not None:
+    col0.metric("S&P 500", f"{sp500_price:,.2f}", f"{sp500_change}%", delta_color="normal")
+else:
+    col0.metric("S&P 500", "Unavailable", "Refresh in 1 min")
 col1.metric("Stocks Analyzed", f"{total_stocks}")
 col2.metric("Stocks Up", f"{stocks_up}", f"{round(stocks_up/total_stocks*100,1)}% of index")
 col3.metric("Stocks Down", f"{stocks_down}", f"{round(stocks_down/total_stocks*100,1)}% of index", delta_color="inverse")
