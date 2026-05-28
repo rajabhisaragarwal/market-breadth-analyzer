@@ -5,6 +5,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import time
 
+st.cache_data.clear()
+
 st.set_page_config(
     page_title="S&P 500 Market Breadth Analyzer",
     page_icon="📊",
@@ -42,7 +44,14 @@ def get_sector_map(tickers):
     with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
         results = list(executor.map(fetch_sector, tickers))
 
-    return dict(results)
+    sector_map = dict(results)
+    
+    # Validate — if more than 20% are Unknown, something went wrong
+    unknown_count = sum(1 for v in sector_map.values() if v == 'Unknown')
+    if unknown_count > len(tickers) * 0.2:
+        st.warning(f"⚠️ Sector data incomplete — {unknown_count} tickers returned Unknown. Try refreshing.")
+    
+    return sector_map
 
 @st.cache_data(ttl=300)
 def get_price_data(tickers):
@@ -122,6 +131,8 @@ with st.expander("📖 How to read this dashboard"):
     
     *Data refreshes every 5 minutes. Sector data refreshes every 24 hours.*
     """)
+
+st.cache_data.clear()
 
 progress_bar = st.progress(0)
 status = st.empty()
