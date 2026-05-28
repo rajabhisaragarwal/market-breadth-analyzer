@@ -132,7 +132,7 @@ with st.expander("📖 How to read this dashboard"):
     
     **Top Movers** shows the biggest individual winners and losers within the index today.
     
-    *Data refreshes every 5 minutes. Sector data refreshes every week.*
+    *Data refreshes every 5 minutes.*
     """)
 
 progress_bar = st.progress(0)
@@ -265,6 +265,7 @@ sector_df = pd.DataFrame({
 sector_df['Sector'] = sector_df['Ticker'].map(sector_map)
 sector_df = sector_df[sector_df['Sector'] != 'Unknown']
 sector_df = sector_df.dropna(subset=['Sector'])
+sector_df = sector_df[~sector_df['Sector'].isin(['Unknown', 'None', ''])]
 
 sector_summary = sector_df.groupby('Sector').agg(
     Total=('% Change', 'count'),
