@@ -270,7 +270,7 @@ sector_df = sector_df[~sector_df['Sector'].isin(['Unknown', 'None', ''])]
 sector_summary = sector_df.groupby('Sector').agg(
     Total=('% Change', 'count'),
     Up=('% Change', lambda x: (x > 0).sum()),
-    Down=('% Change', lambda x: (x < 0).sum()),
+    Down=('% Change', lambda x: (x <= 0).sum()),
     Avg_Change=('% Change', 'mean')
 ).reset_index()
 
@@ -278,8 +278,6 @@ sector_summary['% Up'] = (sector_summary['Up'] / sector_summary['Total'] * 100).
 sector_summary['% Down'] = (100 - sector_summary['% Up']).round(1)
 sector_summary['Avg Change'] = sector_summary['Avg_Change'].apply(lambda x: f"{x:.2f}%")
 sector_summary = sector_summary.sort_values('% Up', ascending=True)
-st.write(f"Debug — sector_summary Total sum: {sector_summary['Total'].sum()}")
-st.write(sector_summary[['Sector', 'Total', 'Up', 'Down']])
 
 fig_sector = go.Figure()
 
