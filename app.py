@@ -135,6 +135,8 @@ with st.expander("📖 How to read this dashboard"):
     *Data refreshes every 5 minutes. Sector data refreshes every week.*
     """)
 
+st.cache_data.clear()
+
 progress_bar = st.progress(0)
 status = st.empty()
 
